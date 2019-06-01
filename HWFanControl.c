@@ -70,8 +70,8 @@ int main (int argc, char argv[])
 
   //setting default values
   int fanPin = 1 ;//WiringPi has its own pin numbers. here we use pin 1 (GPIO 18 in BCM numbering ; a.k.a physical pin 12)
-  int checkInterval = 5 * 1000; //in ms
-  double targetTemp = 50.0 ;//target temperature in Celsius degrees
+  int checkInterval = 10 * 1000; //in ms
+  double targetTemp = 45.0 ;//target temperature in Celsius degrees
   float pTemp = 10; // divide 100 by pTemp to find the temperature diff that will generate 100% fan speed immediately
   float iTemp = 0.75; //let's call this inertia, defines the weight of the last minutes' temperature in the fan speed
 
@@ -82,10 +82,22 @@ int main (int argc, char argv[])
   float fanSpeed = 100;
   int realSpeed;
 
+
+  //open log file
+  //FILE *f = fopen("/home/pi/HWFanControl/log.txt", "w");
+	//if (f == NULL)
+	//{
+	 //   printf("Error opening file!\n");
+	  //  exit(1);
+	//}
+
+
+
   char logTime[20]={0};
 
   getTime(logTime);
-  printf ("%s - starting...\n",logTime);
+  //fprintf (f,"%s - starting...\n",logTime);
+  //printf ("%s - starting...\n",logTime);
 
 
   if (wiringPiSetup () == -1)
@@ -116,7 +128,8 @@ int main (int argc, char argv[])
     realSpeed=floor(fanSpeed*PWM_RATIO);
 
     getTime(logTime);
-    printf("%s - temp %f, diff = %f, sum = %f, pDiff = %f, iDiff = %f, speed %f\n",logTime,actualTemp,diff,sum,pDiff,iDiff,floor(fanSpeed));
+    printf("%s, temp %f, diff = %f, sum = %f, pDiff = %f, iDiff = %f, speed %f\n",logTime,actualTemp,diff,sum,pDiff,iDiff,floor(fanSpeed));
+    //fprintf(f,"%s - temp %f, diff = %f, sum = %f, pDiff = %f, iDiff = %f, speed %f\n",logTime,actualTemp,diff,sum,pDiff,iDiff,floor(fanSpeed));
     pwmWrite (1,realSpeed);
 
     
