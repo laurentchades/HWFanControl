@@ -59,7 +59,7 @@ float readTemp(void) {
   return systemp;
 }
 
-int main (int argc, char argv[])
+int main (int argc, char *argv[])
 {
 
   //do not change
@@ -81,24 +81,20 @@ int main (int argc, char argv[])
   float sum=0;
   float fanSpeed = 100;
   int realSpeed;
-
-
-  //open log file
-  //FILE *f = fopen("/home/pi/HWFanControl/log.txt", "w");
-	//if (f == NULL)
-	//{
-	 //   printf("Error opening file!\n");
-	  //  exit(1);
-	//}
-
-
-
+  int logEnabled = 0;
   char logTime[20]={0};
+  
+  
+  if (argc == 2 && 0 == strcmp(argv[1], "-displayinfo")) {
+  	logEnabled=1;
+  } else if (argc >=2) {
+  	printf ("use -displayinfo to enable loging on std output\n");
+  	exit(1);
+  }
 
-  getTime(logTime);
-  //fprintf (f,"%s - starting...\n",logTime);
-  //printf ("%s - starting...\n",logTime);
 
+
+  
 
   if (wiringPiSetup () == -1)
     exit (1) ;
@@ -127,9 +123,11 @@ int main (int argc, char argv[])
 
     realSpeed=floor(fanSpeed*PWM_RATIO);
 
-    getTime(logTime);
-    printf("%s, temp %f, diff = %f, sum = %f, pDiff = %f, iDiff = %f, speed %f\n",logTime,actualTemp,diff,sum,pDiff,iDiff,floor(fanSpeed));
-    //fprintf(f,"%s - temp %f, diff = %f, sum = %f, pDiff = %f, iDiff = %f, speed %f\n",logTime,actualTemp,diff,sum,pDiff,iDiff,floor(fanSpeed));
+	if (logEnabled == 1) {
+    	getTime(logTime);
+    	printf("%s, temp %f, diff = %f, sum = %f, pDiff = %f, iDiff = %f, speed %f\n",logTime,actualTemp,diff,sum,pDiff,iDiff,floor(fanSpeed));
+    
+	}
     pwmWrite (1,realSpeed);
 
     
